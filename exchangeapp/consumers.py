@@ -28,9 +28,9 @@ class handleVideoChat(AsyncWebsocketConsumer):
                            not_user_existence=False
                 if not_user_existence:
                     await self.accept()
-                    await self.channel_layer.group_add('all',self.channel_name)
+                    await self.channel_layer.group_add(settings.GROUP_NAME,self.channel_name)
                     await self.add_user(user_details)
-                    await self.channel_layer.group_send('all',{
+                    await self.channel_layer.group_send(settings.GROUP_NAME,{
                         'type':'send_all_users',
                         'all_users':users_list
                     })
@@ -83,7 +83,7 @@ class handleVideoChat(AsyncWebsocketConsumer):
                       offered_user_id=user['id']
                       break
                   
-          await self.channel_layer.group_send('all',{
+          await self.channel_layer.group_send(settings.GROUP_NAME,{
               'type':'send_offer_to_remote',
               'remote_channel_name':remote_user_channel_name,
               'remote_user_name':offered_user_name,
@@ -103,7 +103,7 @@ class handleVideoChat(AsyncWebsocketConsumer):
                         break
     
             if remote_user_channel_name:
-                await self.channel_layer.group_send('all',{
+                await self.channel_layer.group_send(settings.GROUP_NAME,{
                     'type':'call_rejected_handle',
                     'remote_channel_name':remote_user_channel_name,
                     'remote_user_name':remote_user_name
@@ -120,7 +120,7 @@ class handleVideoChat(AsyncWebsocketConsumer):
             
           
             if remote_channel_name:
-                await self.channel_layer.group_send('all',{
+                await self.channel_layer.group_send(settings.GROUP_NAME,{
                     'type':'cancelled_by_offered_user',
                     'remote_channel_name':remote_channel_name
                 })            
@@ -133,7 +133,7 @@ class handleVideoChat(AsyncWebsocketConsumer):
                         remote_channel_name=user['channel_name']
 
             if remote_channel_name:
-                await self.channel_layer.group_send('all',{
+                await self.channel_layer.group_send(settings.GROUP_NAME,{
                     'type':'answer_offer',
                     'remote_channel_name':remote_channel_name,
                     'answer_offer_sdp':data['offer_sdp']
@@ -150,11 +150,11 @@ class handleVideoChat(AsyncWebsocketConsumer):
                         user['status']=True
 
             if remote_channel_name:
-                await self.channel_layer.group_send('all',{
+                await self.channel_layer.group_send(settings.GROUP_NAME,{
                     'type':'call_connected_success',
                     'remote_channel_name':remote_channel_name
                 }) 
-                await self.channel_layer.group_send('all',{
+                await self.channel_layer.group_send(settings.GROUP_NAME,{
                         'type':'send_all_users',
                         'all_users':users_list
                     })
@@ -172,12 +172,12 @@ class handleVideoChat(AsyncWebsocketConsumer):
                         break
 
             if remote_channel_name:
-                await self.channel_layer.group_send('all',{
+                await self.channel_layer.group_send(settings.GROUP_NAME,{
                     'type':'call_disconnected_by_user',
                     'remote_channel_name':remote_channel_name
                 })  
 
-                await self.channel_layer.group_send('all',{
+                await self.channel_layer.group_send(settings.GROUP_NAME,{
                         'type':'send_all_users',
                         'all_users':users_list
                     })      
@@ -194,13 +194,13 @@ class handleVideoChat(AsyncWebsocketConsumer):
                 print("Error")                
 
             if remote_channel_name:
-                await self.channel_layer.group_send('all',{
+                await self.channel_layer.group_send(settings.GROUP_NAME,{
                     'type':'user_leave',
                     'remote_channel_name':remote_channel_name
 
                 })  
 
-            await self.channel_layer.group_send('all',{
+            await self.channel_layer.group_send(settings.GROUP_NAME,{
                         'type':'send_all_users',
                         'all_users':users_list
                     })    
@@ -213,7 +213,7 @@ class handleVideoChat(AsyncWebsocketConsumer):
                         remote_channel_name=user['channel_name']
                         break
             if remote_channel_name:
-                await self.channel_layer.group_send('all',{
+                await self.channel_layer.group_send(settings.GROUP_NAME,{
                     'type':'send_text_msg',
                     'remote_channel_name':remote_channel_name,
                     'msg':data['msg']
@@ -266,14 +266,14 @@ class handleVideoChat(AsyncWebsocketConsumer):
             await self.send(json.dumps(data_to_send))  
 
     async def disconnect(self, code):
-       await self.channel_layer.group_discard('all',self.channel_name)
+       await self.channel_layer.group_discard(settings.GROUP_NAME,self.channel_name)
        for user in list(users_list):
            for key,value in user.items():
                if key=="channel_name" and value==self.channel_name:
                    users_list.remove(user)
                    break
        
-       await self.channel_layer.group_send('all',{
+       await self.channel_layer.group_send(settings.GROUP_NAME,{
           'type':'send_user_after_disconnect',
        })         
 

@@ -25,6 +25,7 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 DATABASE_URL=os.getenv('DATABASE_STRING')
 JWT_KEY=os.getenv('JWT_KEY')
+GROUP_NAME=os.getenv('GROUP_NAME')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
