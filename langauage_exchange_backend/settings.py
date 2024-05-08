@@ -52,7 +52,6 @@ INSTALLED_APPS = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000', 
     'http://192.168.29.159:3000', 
-    'https://speechsphere.netlify.app'
     
 ]
 MIDDLEWARE = [
