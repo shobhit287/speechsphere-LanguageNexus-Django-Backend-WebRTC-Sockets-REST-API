@@ -30,7 +30,7 @@ GROUP_NAME=os.getenv('GROUP_NAME')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['speechsphere-languagenexus-frontend-react.onrender.com']
 
 
 # Application definition
@@ -51,7 +51,7 @@ INSTALLED_APPS = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000', 
-    'http://192.168.29.159:3000', 
+    'https://speechsphere-languagenexus-frontend-react.onrender.com',
     
 ]
 MIDDLEWARE = [
