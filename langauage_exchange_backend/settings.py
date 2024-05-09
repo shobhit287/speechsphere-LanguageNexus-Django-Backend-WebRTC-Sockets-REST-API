@@ -50,7 +50,7 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'https://speechsphere-language-nexus-frontend-react.vercel.app'
+    'https://speechsphere-languagenexus-frontend-react.onrender.com',
     
 ]
 MIDDLEWARE = [
