@@ -1,39 +1,45 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import pymongo,json
 from django.conf import settings
+import asyncio
 from .views import verify_token_function
 from motor.motor_asyncio import AsyncIOMotorClient
 users_list=[]
 
 async def userHandle(token):
-    client=AsyncIOMotorClient(settings.DATABASE_URL)
-    db=client.languagePlatform
-    users_collection=db.users
-    status,payload=verify_token_function(token)
-    if payload:
-      user=await users_collection.find_one({"ID":payload['userid']})
-      return user
-    return False
+    try:
+        client=AsyncIOMotorClient(settings.DATABASE_URL)
+        db=client.languagePlatform
+        users_collection=db.users
+        status,payload=verify_token_function(token)
+        if payload:
+            user=await users_collection.find_one({"ID":payload['userid']})
+            return user
+        return False
+    except:
+        return False
 
 class handleVideoChat(AsyncWebsocketConsumer):
     global users_list
     async def connect(self):
         self.token = self.scope['url_route']['kwargs']['token']
+        await self.accept()
         user_details=await userHandle(self.token)
         if user_details:
-                not_user_existence=True
-                for user in list(users_list):
-                    for key,value in user.items():
-                        if key=='id' and value==user_details['ID']:
-                           not_user_existence=False
-                if not_user_existence:
-                    await self.accept()
-                    await self.channel_layer.group_add(settings.GROUP_NAME,self.channel_name)
-                    await self.add_user(user_details)
-                    await self.channel_layer.group_send(settings.GROUP_NAME,{
-                        'type':'send_all_users',
-                        'all_users':users_list
-                    })
+            user_id = user_details.get('ID')
+            if any(user.get('id') == user_id for user in users_list):
+                await self.close()
+            else:
+                await self.channel_layer.group_add(settings.GROUP_NAME, self.channel_name)
+                await self.add_user(user_details)
+                await self.channel_layer.group_send(settings.GROUP_NAME, {
+                    'type': 'send_all_users',
+                    'all_users': users_list
+                })
+
+        else:
+           print("he;;p")
+           await self.close()         
                 
 
         
