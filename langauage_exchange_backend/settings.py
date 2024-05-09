@@ -132,14 +132,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-from urllib.parse import urlparse
-redis_url = os.environ.get('REDIS_URL', 'redis://localhost:6379')
-url_parts = urlparse(redis_url)
+REDIS_URL = os.getenv('REDIS_URL')
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(url_parts.hostname, url_parts.port)],
+            "hosts": [REDIS_URL],
         },
     },
 }
