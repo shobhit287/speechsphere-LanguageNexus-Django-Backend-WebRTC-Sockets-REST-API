@@ -51,7 +51,7 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-     os.getenv('CORS_ORIGIN'),
+     f'{os.getenv('CORS_ORIGIN')}',
     'http://localhost:3000'
     
 ]
