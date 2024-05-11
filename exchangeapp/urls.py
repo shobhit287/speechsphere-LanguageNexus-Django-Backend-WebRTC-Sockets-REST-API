@@ -6,5 +6,6 @@ urlpatterns = [
     path('signup', views.handle_signup.as_view(),name="signup_user"),
     path('login', views.handle_login.as_view(),name="login_user"),
     path('verifytoken', views.verify_token.as_view(),name="verify_token"),
+    path('queryform', views.queryForm.as_view(),name="verify_token"),
     
 ]

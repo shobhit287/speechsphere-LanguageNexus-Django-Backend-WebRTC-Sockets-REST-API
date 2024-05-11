@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 
 CORS_ALLOWED_ORIGINS = [
     'https://speechsphere-languagenexus-frontend-react.onrender.com',
+    'http://localhost:3000'
     
 ]
 MIDDLEWARE = [
@@ -132,12 +133,19 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-REDIS_URL = os.getenv('REDIS_URL')
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [REDIS_URL],
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com' 
+EMAIL_PORT = 587  
+EMAIL_HOST_USER = os.getenv('HOST_MAIL')  
+EMAIL_HOST_PASSWORD = os.getenv('HOST_PASSWORD')
+EMAIL_USE_TLS = True 
+
+
