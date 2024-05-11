@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse,HttpResponse
 from rest_framework.views import APIView
 from datetime import datetime, timedelta, timezone
+from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password,check_password
 import pymongo
 import jwt
@@ -73,4 +74,22 @@ class verify_token(APIView):
        return JsonResponse({"status": token_status},status=200)
       else:
          return JsonResponse({"status": False},status=401)
+      
+
+class queryForm(APIView):
+   def post(self,request):
+      data=request.data   
+      try:
+            send_mail(
+                f"QUERY FROM {data['contactus_email']}",
+                f"Name: {data['contactus_name']}\nEmail: {data['contactus_email']}\nMessage: {data['contactus_description']}",
+                f'{data['contactus_email']}',  
+                [settings.EMAIL_HOST_USER],  
+                fail_silently=False,
+            )   
+            return JsonResponse({"status": True}, status=200)
+      except Exception as e:
+            print("ERROR:", e)
+            return JsonResponse({"status": False}, status=500)
+
 
