@@ -89,7 +89,6 @@ class queryForm(APIView):
             )   
             return JsonResponse({"status": True}, status=200)
       except Exception as e:
-            print("ERROR:", e)
             return JsonResponse({"status": False}, status=500)
 
 
