@@ -83,7 +83,7 @@ class queryForm(APIView):
             send_mail(
                 f"QUERY FROM {data['contactus_email']}",
                 f"Name: {data['contactus_name']}\nEmail: {data['contactus_email']}\nMessage: {data['contactus_description']}",
-                f'{data['contactus_email']}',  
+                data['contactus_email'],  
                 [settings.EMAIL_HOST_USER],  
                 fail_silently=False,
             )   
