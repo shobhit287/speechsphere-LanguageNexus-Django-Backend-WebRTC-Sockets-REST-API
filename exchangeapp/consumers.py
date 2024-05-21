@@ -20,6 +20,7 @@ class handleVideoChat(AsyncWebsocketConsumer):
     global users_list
     async def connect(self):
         self.token = self.scope['url_route']['kwargs']['token']
+        await self.accept()
         user_details=await userHandle(self.token)
         if user_details:
                 not_user_existence=True
@@ -28,14 +29,14 @@ class handleVideoChat(AsyncWebsocketConsumer):
                         if key=='id' and value==user_details['ID']:
                            not_user_existence=False
                 if not_user_existence:
-                    await self.accept()
                     await self.channel_layer.group_add(settings.GROUP_NAME,self.channel_name)
                     await self.add_user(user_details)
                     await self.channel_layer.group_send(settings.GROUP_NAME,{
                         'type':'send_all_users',
                         'all_users':users_list
                     })
-                
+                else:
+                    await self.close()
 
         
 
@@ -90,6 +91,21 @@ class handleVideoChat(AsyncWebsocketConsumer):
               'remote_user_name':offered_user_name,
               'offer':data['offer_sdp'],
               'remote_id':offered_user_id
+          })
+
+        if(data['type']=="ice_candidates"):
+          remote_user_channel_name=None
+          for user in list(users_list):
+              for key,value in user.items():
+                  if key=="id" and value==data['remote_id']:
+                      remote_user_channel_name=user['channel_name']
+                      break
+                 
+                  
+          await self.channel_layer.group_send(settings.GROUP_NAME,{
+              'type':'send_ice_candidates',
+              'remote_channel_name':remote_user_channel_name,
+              'candidate':data['candidates'],
           })
 
         if data['type']=='rejected':
@@ -264,6 +280,11 @@ class handleVideoChat(AsyncWebsocketConsumer):
     async def send_offer_to_remote(self,event):
         if self.channel_name==event['remote_channel_name']:
             data_to_send={'type':'recieved_offer','offered_by':event['remote_user_name'],'offer':event['offer'],'offered_user_id':event['remote_id']}  
+            await self.send(json.dumps(data_to_send))  
+
+    async def send_ice_candidates(self,event):
+        if self.channel_name==event['remote_channel_name']:
+            data_to_send={'type':'ice_candidates','candidate':event['candidate']}  
             await self.send(json.dumps(data_to_send))  
 
     async def disconnect(self, code):
