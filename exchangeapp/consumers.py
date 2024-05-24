@@ -251,6 +251,30 @@ class handleVideoChat(AsyncWebsocketConsumer):
                     'msg':data['msg']
 
                 })    
+
+        if data['type']=="candidates_create":
+            remote_channel_name=None
+            for user in list(users_list):   
+                for key,value in user.items():
+                    if key=='id' and value==data['remote_id']:
+                        remote_channel_name=user['channel_name']
+                        break
+
+            if remote_channel_name:
+                await self.channel_layer.group_send(settings.GROUP_NAME,{
+                    'type':'candidates_create',
+                    'remote_channel_name':remote_channel_name,
+                    'candidates':data['candidates']
+
+                })    
+
+       
+
+    async def candidates_create(self,event):
+        if self.channel_name==event['remote_channel_name']:
+            data={'type':'candidates_create','candidates':event['candidates']}
+            await self.send(json.dumps(data))   
+
     async def send_text_msg(self,event):
         if self.channel_name==event['remote_channel_name']:
             data={'type':'recieved_msg','msg':event['msg']}
