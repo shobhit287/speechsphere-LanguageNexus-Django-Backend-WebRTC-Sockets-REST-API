@@ -93,20 +93,7 @@ class handleVideoChat(AsyncWebsocketConsumer):
               'remote_id':offered_user_id
           })
 
-        if(data['type']=="create_ice_candidates"):
-          remote_user_channel_name=None
-          for user in list(users_list):
-              for key,value in user.items():
-                  if key=="id" and value==data['remote_id']:
-                      remote_user_channel_name=user['channel_name']
-                      break
-                 
-                  
-          await self.channel_layer.group_send(settings.GROUP_NAME,{
-              'type':'send_ice_candidates',
-              'remote_channel_name':remote_user_channel_name,
-              'candidate':data['candidates'],
-          })
+       
 
         if(data['type']=="answer_ice_candidates"):
           remote_user_channel_name=None
@@ -321,10 +308,7 @@ class handleVideoChat(AsyncWebsocketConsumer):
             data_to_send={'type':'recieved_offer','offered_by':event['remote_user_name'],'offer':event['offer'],'offered_user_id':event['remote_id']}  
             await self.send(json.dumps(data_to_send))  
 
-    async def send_ice_candidates(self,event):
-        if self.channel_name==event['remote_channel_name']:
-            data_to_send={'type':'create_ice_candidates','candidate':event['candidate']}  
-            await self.send(json.dumps(data_to_send))  
+ 
 
     async def answer_ice_candidates(self,event):
         if self.channel_name==event['remote_channel_name']:
