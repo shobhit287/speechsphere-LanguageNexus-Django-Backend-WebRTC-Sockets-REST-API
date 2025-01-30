@@ -53,8 +53,8 @@ class handle_login(APIView):
             return JsonResponse({"Message":"Invalid Credentials","status":False},status=401)   
       else:
          return JsonResponse({"Message":"Invalid Credentials","status":False},status=401)  
-    except:
-       return JsonResponse({"Message":"Error While Authenicating the User","status":False},status=400) 
+    except Exception as e:
+       return JsonResponse({"error": str(e),"status":False},status=400) 
    
 def verify_token_function(token):
    try:
