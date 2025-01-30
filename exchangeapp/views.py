@@ -28,8 +28,8 @@ class handle_signup(APIView):
          return JsonResponse({"status":True},status=201)
         else:
          return JsonResponse({"status":False, "message": "User with this email already exists"}, status=409)
-      except:
-           return JsonResponse({"status":False},status=400)
+      except Exception as e:
+           return JsonResponse({"status":False, "error": str(e)},status=400)
 
 def generate_jwt(ID):
    expiration_time = datetime.now(timezone.utc) + timedelta(days=10)
